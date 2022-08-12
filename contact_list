@@ -1,0 +1,55 @@
+#! /bin/bash
+
+file="contact"
+if ! [ -f "$file" ]; then
+	touch "$file"
+	echo "[+] contact file created successfully"
+fi
+
+if [ -z $1 ]; then
+	echo ""
+	echo "-i to add new contact"
+	echo "-a to view all contact"
+	echo "-s to search for contact"
+	echo "-d to delete a contact"
+fi
+
+if [[ $1 == *"-i"* ]]; then
+	echo "Create a new record: " 
+	read -p "Enter first name: " fname 
+	read -p "Enter Last name: " lname 
+	read -p "Enter email address: " email
+	#validate email address
+	regex="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z0-9]([a-z0-9-]*[a-z0-9])?\$"
+	if [[ $email =~ $regex ]]; then
+		echo $fname $lname $email >> contact
+		echo "[+] New record added successfully"
+	else
+		echo "[x] Enter a valid email address."
+	fi
+fi
+
+
+if [[ $1 == *"-s"* ]]; then
+		echo "Search a record"
+		read -p "Enter first or last name or email: " search
+		found=$(grep $search $file)
+		if [ -z "$found" ]; then
+			echo "[x] No item found"
+		else
+			grep $search $file | while read -r line ; do
+			i=$[ $i +1 ]
+			echo "$i $line"
+			done
+		fi
+fi
+
+
+if [[ $1 == *"-v"* ]]; then
+	echo "[*] List of all contact"
+
+	cat $file | while read  line ; do
+		i=$[ $i +1]
+		echo "$i $line"
+	done
+fi
